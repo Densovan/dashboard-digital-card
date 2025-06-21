@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router";
-import AuthLayout from "./components/Layout/auth-layout";
+import AuthLayout from "./components/layout/auth-layout";
 import LoginForm from "./components/auth-screen/login";
-import DashboardLayout from "./components/Layout/dashboard-layout";
+import DashboardLayout from "./components/layout/dashboard-layout";
 import Dashboard from "./screens/dashboard";
 
 function App() {
