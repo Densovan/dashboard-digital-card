@@ -41,7 +41,7 @@ axiosInstance.interceptors.request.use(
     // config.headers.Authorization = `Bearer ${getToken()}`;
     // const accessToken = Cookies.get("accessToken");
     const accessToken = useAuthStore.getState().accessToken;
-    console.log(accessToken, "===accesstoekn===");
+
     const device = getLocalDeviceInfo();
     config.headers["Authorization"] = `${accessToken}`;
     config.headers["x-device-id"] = device?.["x-device-id"];
@@ -73,8 +73,8 @@ axiosInstance.interceptors.response.use(
           // const refreshToken = Cookies.get(CookieName.REFRESH_TOKEN);
           const refreshToken = useAuthStore.getState().refreshToken;
           const response = await axiosInstance({
-            method: "GET",
-            url: `${_envCons.baseUrl}/auth/refresh-token/${refreshToken}`,
+            method: "POST",
+            url: `${_envCons.baseUrl}/auth/refresh-token/`,
             data: {
               refreshToken: refreshToken,
             },

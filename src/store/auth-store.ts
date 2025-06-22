@@ -1,45 +1,14 @@
-// import { create } from "zustand";
-// import { devtools } from "zustand/middleware";
-// import { clearTokens } from "@/lib/cookie";
-// import Cookies from "js-cookie";
-
-// interface AuthState {
-//   refreshToken: string;
-//   accessToken: string;
-//   isAuthenticated: boolean;
-//   setAuthenticated: (value: boolean) => void;
-//   logout: () => void;
-// }
-
-// export const useAuthStore = create<AuthState>()(
-//   devtools(
-//     (set) => ({
-//       isAuthenticated: false,
-//       refreshToken: Cookies.get("accessToken"),
-//       accessToken: Cookies.get("refreshToken"),
-//       setAuthenticated: (value) =>
-//         set({ isAuthenticated: value }, false, "auth/setAuthenticated"),
-//       logout: () => {
-//         // clearTokens();
-//         set({ isAuthenticated: false }, false, "auth/logout");
-//         window.location.href = "/login";
-//       },
-//     }),
-//     { name: "AuthStore" }
-//   )
-// );
-
-// src/store/auth-store.ts
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { clearTokens } from "@/lib/cookie";
 import Cookies from "js-cookie";
+import { CookieName } from "@/types";
 
 interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  hasCheckedAuth: boolean;
+  // hasCheckedAuth: boolean;
   setTokens: (accessToken: string, refreshToken: string) => void;
   checkAuth: () => void;
   logout: () => void;
@@ -50,8 +19,8 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       accessToken: null,
       refreshToken: null,
-      isAuthenticated: false,
-      hasCheckedAuth: false,
+      isAuthenticated: !!Cookies.get(CookieName.ACCESS_TOKEN),
+      // hasCheckedAuth: false,
 
       // ✅ Called after login
       setTokens: (accessToken, refreshToken) =>
@@ -67,15 +36,15 @@ export const useAuthStore = create<AuthState>()(
 
       // ✅ Called on app init (reload/refresh)
       checkAuth: () => {
-        const access = Cookies.get("accessToken");
-        const refresh = Cookies.get("refreshToken");
+        const access = Cookies.get(CookieName.ACCESS_TOKEN);
+        const refresh = Cookies.get(CookieName.REFRESH_TOKEN);
 
         if (access && refresh) {
           set(
             {
               accessToken: access,
               refreshToken: refresh,
-              hasCheckedAuth: true,
+              // hasCheckedAuth: true,
               isAuthenticated: true,
             },
             false,
@@ -97,7 +66,7 @@ export const useAuthStore = create<AuthState>()(
             accessToken: null,
             refreshToken: null,
             isAuthenticated: false,
-            hasCheckedAuth: true,
+            // hasCheckedAuth: true,
           },
           false,
           "auth/logout"

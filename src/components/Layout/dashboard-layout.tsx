@@ -7,12 +7,12 @@ import { useAuthStore } from "@/store/auth-store";
 
 const DashboardLayout: React.FC = () => {
   // const isLogin = useAuthStore((s) => s.isAuthenticated);
-  const { isAuthenticated, hasCheckedAuth } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const location = useLocation();
 
-  if (!hasCheckedAuth) {
-    return <div className="p-6 text-center">🔄 Loading...</div>; // or a spinner
-  }
+  // if (!hasCheckedAuth) {
+  //   return <div className="p-6 text-center">🔄 Loading...</div>; // or a spinner
+  // }
   if (!isAuthenticated) {
     return <Navigate to={"/login"} state={{ from: location }} replace />;
   }
