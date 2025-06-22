@@ -11,6 +11,7 @@ import { useAuthStore } from "@/store/auth-store";
 
 const axiosInstance = axios.create({
   baseURL: _envCons.baseUrl, // Replace with your API base URL
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
     // Add any other headers or configurations you need
@@ -38,9 +39,11 @@ axiosInstance.interceptors.request.use(
     //  const isLogin = useAppSelector((state) => state.auth.isLogin);
     // You can modify the request config here, e.g., add authentication headers
     // config.headers.Authorization = `Bearer ${getToken()}`;
-    const accessToken = Cookies.get(CookieName.ACCESS_TOKEN);
+    // const accessToken = Cookies.get("accessToken");
+    const accessToken = useAuthStore.getState().accessToken;
+    console.log(accessToken, "===accesstoekn===");
     const device = getLocalDeviceInfo();
-    config.headers["Authorization"] = `Bearer ${accessToken}`;
+    config.headers["Authorization"] = `${accessToken}`;
     config.headers["x-device-id"] = device?.["x-device-id"];
     config.headers["x-device-type"] = device?.["x-device-type"];
     config.headers["x-device-token"] = device?.["x-device-token"];
@@ -67,10 +70,11 @@ axiosInstance.interceptors.response.use(
       // originalConfig._retry = true;
       if (!isRefreshing) {
         try {
-          const refreshToken = Cookies.get(CookieName.REFRESH_TOKEN);
+          // const refreshToken = Cookies.get(CookieName.REFRESH_TOKEN);
+          const refreshToken = useAuthStore.getState().refreshToken;
           const response = await axiosInstance({
             method: "GET",
-            url: `${_envCons.baseUrl}/auth/access-token/${refreshToken}`,
+            url: `${_envCons.baseUrl}/auth/refresh-token/${refreshToken}`,
             data: {
               refreshToken: refreshToken,
             },
@@ -118,9 +122,7 @@ axiosInstance.interceptors.response.use(
       // Call the function to log out the user
       console.log("error 2");
       useAuthStore.getState().logout();
-      //   const dispatch = useAppDispatch();
-      //   dispatch(clearToken());
-      // navigate('/login', { replace: true });
+
       return Promise.reject(error.response.data);
     }
     // Handle specific error cases here if needed

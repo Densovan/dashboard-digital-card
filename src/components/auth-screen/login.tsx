@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "../ui/button";
 import {
   Card,
@@ -8,33 +7,27 @@ import {
   CardTitle,
 } from "../ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, LogIn, Mail, Lock } from "lucide-react";
-import { Label } from "@radix-ui/react-label";
+import { LogIn } from "lucide-react";
 import { Input } from "../ui/input";
+import { useMutation } from "@tanstack/react-query";
+import { authRequest } from "@/lib/api/auth-api";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { useAuthStore } from "@/store/auth-store";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
-type Inputs = {
-  example: string;
-  exampleRequired: string;
-};
+import type { AuthLoginForm } from "@/types/auth-type";
+import { useAuthStore } from "@/store/auth-store";
 
 const LoginForm = () => {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  // const [errors, setErrors] = useState({ email: "", password: "" });
+  const setTokens = useAuthStore((s) => s.setTokens);
+
+  const { AUTH_LOGIN } = authRequest();
   const formSchema = z.object({
     username: z.string().min(2, {
       message: "Username must be at least 2 characters",
@@ -42,16 +35,24 @@ const LoginForm = () => {
     password: z.string(),
   });
 
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   watch,
-  //   formState: { errors },
-  // } = useForm<Inputs>();
-
-  //   const { toast } = useToast();
+  const {
+    isSuccess,
+    isPending,
+    data,
+    mutate: mutateLogin,
+  } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: (payload: AuthLoginForm) => AUTH_LOGIN(payload),
+    onSuccess: async (data) => {
+      if (data.accessToken && data.refreshToken) {
+        setTokens(data.accessToken, data.refreshToken); // ✅ Store in Zustand + Cookies
+      }
+      window.location.href = "/";
+    },
+  });
 
   function onSubmitHandler(data: z.infer<typeof formSchema>) {
+    mutateLogin(data);
     console.log(data);
   }
   const form = useForm<z.infer<typeof formSchema>>({
@@ -135,9 +136,9 @@ const LoginForm = () => {
             <Button
               type="submit"
               className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
-              disabled={isLoading}
+              disabled={isPending}
             >
-              {isLoading ? (
+              {isPending ? (
                 <div className="flex items-center space-x-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   <span>Signing In...</span>
