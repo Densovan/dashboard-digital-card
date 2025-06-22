@@ -1,6 +1,11 @@
 export interface IAuthResponse {
-  accessToken: string;
-  refreshToken: string;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    existUser: {
+      roles: string[];
+    };
+  };
 }
 
 export type AuthLoginForm = {

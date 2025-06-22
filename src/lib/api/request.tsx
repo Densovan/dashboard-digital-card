@@ -71,13 +71,13 @@ axiosInstance.interceptors.response.use(
       if (!isRefreshing) {
         try {
           // const refreshToken = Cookies.get(CookieName.REFRESH_TOKEN);
-          const refreshToken = useAuthStore.getState().refreshToken;
+          // const refreshToken = useAuthStore.getState().refreshToken;
           const response = await axiosInstance({
             method: "POST",
-            url: `${_envCons.baseUrl}/auth/refresh-token/`,
-            data: {
-              refreshToken: refreshToken,
-            },
+            url: `${_envCons.baseUrl}/auth/refresh-token`,
+            // data: {
+            //   refreshToken: refreshToken,
+            // },
           });
           const { accessToken } = response.data;
           Cookies.set(CookieName.ACCESS_TOKEN, accessToken);
@@ -105,7 +105,7 @@ axiosInstance.interceptors.response.use(
           // You can clear all storage and redirect the user to the login page
           if (refreshError.response && refreshError.response.data) {
             console.log("error 1");
-            useAuthStore.getState().logout();
+            // useAuthStore.getState().logout();
             return Promise.reject(refreshError.response.data);
           }
           return Promise.reject(refreshError);
@@ -121,7 +121,7 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       // Call the function to log out the user
       console.log("error 2");
-      useAuthStore.getState().logout();
+      // useAuthStore.getState().logout();
 
       return Promise.reject(error.response.data);
     }
