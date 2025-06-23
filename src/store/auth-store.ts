@@ -91,7 +91,11 @@ import { devtools } from "zustand/middleware";
 import Cookies from "js-cookie";
 import { clearTokens } from "@/lib/cookie";
 import { CookieName } from "@/types";
-import request from "@/lib/api/request";
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+  roles: string[];
+}
 
 interface AuthState {
   accessToken: string | null;
@@ -144,8 +148,10 @@ export const useAuthStore = create<AuthState>()(
         const isAuth = !!access && !!refresh;
 
         if (isAuth) {
-          const response = await request.get("/user/me");
-          const roles = response.data?.roles || [];
+          let roles = [];
+          const decoded = jwtDecode<JwtPayload>(access);
+          console.log("decode", decoded);
+          roles = decoded.roles || [];
 
           try {
             set(

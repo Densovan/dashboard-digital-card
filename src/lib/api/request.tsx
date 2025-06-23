@@ -105,7 +105,7 @@ axiosInstance.interceptors.response.use(
           // You can clear all storage and redirect the user to the login page
           if (refreshError.response && refreshError.response.data) {
             console.log("error 1");
-            // useAuthStore.getState().logout();
+            useAuthStore.getState().logout();
             return Promise.reject(refreshError.response.data);
           }
           return Promise.reject(refreshError);
@@ -121,7 +121,7 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 403) {
       // Call the function to log out the user
       console.log("error 2");
-      // useAuthStore.getState().logout();
+      useAuthStore.getState().logout();
 
       return Promise.reject(error.response.data);
     }
