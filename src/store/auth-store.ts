@@ -185,7 +185,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       /**
-       * ✅ Clears state + cookies and redirects
+       * Clears state + cookies and redirects
        */
       logout: () => {
         clearTokens();
