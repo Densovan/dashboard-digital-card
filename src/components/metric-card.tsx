@@ -1,21 +1,16 @@
 import type { LucideIcon } from "lucide-react";
-import { dashboardRequest } from "@/lib/api/dashboard-api";
-import { useQuery } from "@tanstack/react-query";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { iconMap } from "@/lib/icon-map";
+import { useDashboardStore } from "@/store/dashboard-store";
 
 export function MetricsCards() {
-  const { DASHBOARD_ANALYTICS } = dashboardRequest();
-  const { data, isFetching } = useQuery({
-    queryKey: ["dashboard_analytics"],
-    queryFn: async () => DASHBOARD_ANALYTICS(),
-  });
-  if (isFetching) {
-    return "loading..";
-  }
+  const summary = useDashboardStore((state) => state.summary);
+
+  if (!summary.length) return "Loading metrics...";
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {data?.data?.summary.map((metric) => {
+      {summary.map((metric) => {
         const Icon: LucideIcon = iconMap[metric.icon] || iconMap["user"];
         return (
           <Card key={metric.title}>

@@ -2,8 +2,30 @@ import { MetricsCards } from "@/components/metric-card";
 import { RecentActivity } from "@/components/recent-activity";
 import { RevenueChart } from "@/components/revenue-chart";
 import { TopProducts } from "@/components/top-products";
+import { dashboardRequest } from "@/lib/api/dashboard-api";
+import { useDashboardStore } from "@/store/dashboard-store";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const Dashboard = () => {
+  const { DASHBOARD_ANALYTICS } = dashboardRequest();
+  const setSummary = useDashboardStore((state) => state.setSummary);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["dashboard_analytics"],
+    queryFn: async () => DASHBOARD_ANALYTICS(),
+    staleTime: 1000 * 60 * 5, // 5 mins
+  });
+
+  useEffect(() => {
+    if (data?.data?.summary) {
+      setSummary(data.data.summary);
+    }
+  }, [data, setSummary]);
+
+  if (isLoading) return <p>Loading dashboard...</p>;
+  if (isError) return <p>Error loading dashboard</p>;
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
