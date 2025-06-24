@@ -11,6 +11,7 @@ const Dashboard = () => {
   const { DASHBOARD_ANALYTICS } = dashboardRequest();
   const setSummary = useDashboardStore((state) => state.setSummary);
   const setRevenue = useDashboardStore((state) => state.setRevenue);
+  const setRecentUsers = useDashboardStore((state) => state.setRecentUsers);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard_analytics"],
@@ -22,8 +23,9 @@ const Dashboard = () => {
     if (data?.data) {
       setSummary(data.data.summary);
       setRevenue(data.data.userGrowth);
+      setRecentUsers(data.data.recentUsers);
     }
-  }, [data, setSummary, setRevenue]);
+  }, [data, setSummary, setRevenue, setRecentUsers]);
 
   if (isLoading) return <p>Loading dashboard...</p>;
   if (isError) return <p>Error loading dashboard</p>;

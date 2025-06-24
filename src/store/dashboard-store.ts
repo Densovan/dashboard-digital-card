@@ -15,18 +15,30 @@ interface RevenueItem {
   count: number;
 }
 
+interface RecentUsers {
+  id: string;
+  full_name: string;
+  email: string;
+  avatar: string;
+  created_at: Date;
+}
+
 interface DashboardStore {
   summary: Metric[];
   revenue: RevenueItem[];
+  recentUsers: RecentUsers[];
   setSummary: (data: Metric[]) => void;
   setRevenue: (data: RevenueItem[]) => void;
+  setRecentUsers: (data: RecentUsers[]) => void;
 }
 
 export const useDashboardStore = create<DashboardStore>()(
   devtools((set) => ({
     summary: [],
     revenue: [],
+    recentUsers: [],
     setSummary: (data) => set({ summary: data }),
     setRevenue: (data) => set({ revenue: data }),
+    setRecentUsers: (data) => set({ recentUsers: data }),
   }))
 );

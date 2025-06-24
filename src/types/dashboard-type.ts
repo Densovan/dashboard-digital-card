@@ -13,5 +13,14 @@ export interface IDashboardResponse {
         count: number;
       }
     ];
+    recentUsers: [
+      {
+        id: string;
+        email: string;
+        full_name: string;
+        created_at: Date;
+        avatar: string;
+      }
+    ];
   };
 }

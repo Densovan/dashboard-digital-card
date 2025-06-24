@@ -1,73 +1,37 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-
-const recentSales = [
-  {
-    name: "Olivia Martin",
-    email: "olivia.martin@email.com",
-    amount: "+$1,999.00",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "OM",
-  },
-  {
-    name: "Jackson Lee",
-    email: "jackson.lee@email.com",
-    amount: "+$39.00",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "JL",
-  },
-  {
-    name: "Isabella Nguyen",
-    email: "isabella.nguyen@email.com",
-    amount: "+$299.00",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "IN",
-  },
-  {
-    name: "William Kim",
-    email: "will@email.com",
-    amount: "+$99.00",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "WK",
-  },
-  {
-    name: "Sofia Davis",
-    email: "sofia.davis@email.com",
-    amount: "+$39.00",
-    avatar: "/placeholder.svg?height=32&width=32",
-    initials: "SD",
-  },
-];
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDashboardStore } from "@/store/dashboard-store";
 
 export function RecentActivity() {
+  const recentUsers = useDashboardStore((state) => state.recentUsers);
+  if (!recentUsers) {
+    return "Loading recent users";
+  }
   return (
     <Card className="col-span-3">
       <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-        <CardDescription>You made 265 sales this month.</CardDescription>
+        <CardTitle>Recent Users</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
-          {recentSales.map((sale, index) => (
+          {recentUsers.map((user, index) => (
             <div key={index} className="flex items-center">
               <Avatar className="h-9 w-9">
                 <AvatarImage
-                  src={sale.avatar || "/placeholder.svg"}
+                  src={user.avatar || "/placeholder.svg"}
                   alt="Avatar"
                 />
-                <AvatarFallback>{sale.initials}</AvatarFallback>
+                <AvatarFallback>
+                  {user.full_name.substring(0, 2)}
+                </AvatarFallback>
               </Avatar>
               <div className="ml-4 space-y-1">
-                <p className="text-sm font-medium leading-none">{sale.name}</p>
-                <p className="text-sm text-muted-foreground">{sale.email}</p>
+                <p className="text-sm font-medium leading-none">
+                  {user.full_name}
+                </p>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
               </div>
-              <div className="ml-auto font-medium">{sale.amount}</div>
+              <div className="ml-auto font-small">active</div>
             </div>
           ))}
         </div>

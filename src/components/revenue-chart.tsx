@@ -16,7 +16,7 @@ export function RevenueChart() {
   if (!userGrowth) {
     return "Loading user growth";
   }
-  console.log(userGrowth);
+
   return (
     <Card className="col-span-4">
       <CardHeader>
