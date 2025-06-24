@@ -10,6 +10,7 @@ import { useEffect } from "react";
 const Dashboard = () => {
   const { DASHBOARD_ANALYTICS } = dashboardRequest();
   const setSummary = useDashboardStore((state) => state.setSummary);
+  const setRevenue = useDashboardStore((state) => state.setRevenue);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["dashboard_analytics"],
@@ -18,10 +19,11 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    if (data?.data?.summary) {
+    if (data?.data) {
       setSummary(data.data.summary);
+      setRevenue(data.data.userGrowth);
     }
-  }, [data, setSummary]);
+  }, [data, setSummary, setRevenue]);
 
   if (isLoading) return <p>Loading dashboard...</p>;
   if (isError) return <p>Error loading dashboard</p>;

@@ -12,7 +12,7 @@ interface Metric {
 
 interface RevenueItem {
   date: string;
-  revenue: number;
+  count: number;
 }
 
 interface DashboardStore {

@@ -7,5 +7,11 @@ export interface IDashboardResponse {
         icon: string;
       }
     ];
+    userGrowth: [
+      {
+        date: string;
+        count: number;
+      }
+    ];
   };
 }
