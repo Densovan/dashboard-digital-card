@@ -1,15 +1,11 @@
 "use client";
 
 import {
-  BarChart3,
   Building2,
-  Calendar,
-  FileText,
   Home,
+  IdCardIcon,
   Settings,
-  ShoppingCart,
-  Users,
-  Wallet,
+  Users2Icon,
 } from "lucide-react";
 
 import {
@@ -30,39 +26,19 @@ import { UserNav } from "../user-nav";
 const menuItems = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/",
     icon: Home,
     isActive: true,
   },
   {
-    title: "Analytics",
-    url: "#",
-    icon: BarChart3,
+    title: "Users",
+    url: "/users",
+    icon: Users2Icon,
   },
   {
-    title: "Orders",
-    url: "#",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Customers",
-    url: "#",
-    icon: Users,
-  },
-  {
-    title: "Products",
-    url: "#",
-    icon: FileText,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Finance",
-    url: "#",
-    icon: Wallet,
+    title: "Cards",
+    url: "/cards",
+    icon: IdCardIcon,
   },
 ];
 
