@@ -6,6 +6,7 @@ import Dashboard from "./screens/dashboard";
 import { useAuthStore } from "@/store/auth-store";
 import { useEffect } from "react";
 import ProtectedRoute from "./components/protect-route";
+import Users from "./screens/users";
 
 function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth);
@@ -25,6 +26,7 @@ function App() {
         <Route element={<ProtectedRoute roles={["admin", "super_admin"]} />}>
           <Route element={<DashboardLayout />}>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/users" element={<Users />} />
           </Route>
         </Route>
       </Routes>

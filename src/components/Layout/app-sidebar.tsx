@@ -7,6 +7,7 @@ import {
   Settings,
   Users2Icon,
 } from "lucide-react";
+import { useLocation } from "react-router";
 
 import {
   Sidebar,
@@ -51,6 +52,7 @@ const secondaryItems = [
 ];
 
 export function AppSidebar() {
+  const location = useLocation();
   return (
     <Sidebar>
       <SidebarHeader className="border-b px-6 py-4">
@@ -66,7 +68,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={item.isActive}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
                     <a href={item.url}>
                       <item.icon className="h-4 w-4" />
                       <span>{item.title}</span>
