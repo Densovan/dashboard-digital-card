@@ -150,7 +150,6 @@ export const useAuthStore = create<AuthState>()(
         if (isAuth) {
           let roles = [];
           const decoded = jwtDecode<JwtPayload>(access);
-          console.log("decode", decoded);
           roles = decoded.roles || [];
 
           try {

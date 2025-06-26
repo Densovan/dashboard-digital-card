@@ -1,12 +1,27 @@
 import request from "./request";
 
+type UserQueryParams = {
+  page: number;
+  pageSize: number;
+  sortBy: string;
+  sortOrder: "ASC" | "DESC";
+};
+
 export const requestUser = () => {
-  const USERS = async () => {
+  const USERS = async ({
+    page,
+    pageSize,
+    sortBy,
+    sortOrder,
+  }: UserQueryParams) => {
+    const url = `/user?page=${page}&limit=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}&is_deleted=false`;
+
     return await request({
-      url: "/user?page=1&limit=10&sortOrder=DESC&is_deleted=false",
+      url,
       method: "GET",
     });
   };
+
   return {
     USERS,
   };
