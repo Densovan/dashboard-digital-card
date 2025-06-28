@@ -1,10 +1,12 @@
+import type { IUserResponse } from "@/types/user-type";
 import request from "./request";
 
 type UserQueryParams = {
   page: number;
   pageSize: number;
   sortBy: string;
-  sortOrder: "ASC" | "DESC";
+  sortOrder: string;
+  email: object;
 };
 
 export const requestUser = () => {
@@ -13,9 +15,9 @@ export const requestUser = () => {
     pageSize,
     sortBy,
     sortOrder,
-  }: UserQueryParams) => {
-    const url = `/user?page=${page}&limit=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}&is_deleted=false`;
-
+    email,
+  }: UserQueryParams): Promise<IUserResponse> => {
+    const url = `/user?page=${page}&limit=${pageSize}&sortBy=${sortBy}&sortOrder=${sortOrder}&email=${email}&is_deleted=false`;
     return await request({
       url,
       method: "GET",
