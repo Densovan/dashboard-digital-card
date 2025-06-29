@@ -1,7 +1,7 @@
 import { MetricsCards } from "@/components/metric-card";
 import { RecentActivity } from "@/components/recent-activity";
 import { RevenueChart } from "@/components/revenue-chart";
-import { TopProducts } from "@/components/top-products";
+
 import { dashboardRequest } from "@/lib/api/dashboard-api";
 import { useDashboardStore } from "@/store/dashboard-store";
 import { useQuery } from "@tanstack/react-query";
@@ -41,9 +41,9 @@ const Dashboard = () => {
           <RevenueChart />
           <RecentActivity />
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        {/* <div className="grid gap-4 md:grid-cols-2">
           <TopProducts />
-        </div>
+        </div> */}
       </div>
     </div>
   );

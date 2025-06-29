@@ -20,6 +20,7 @@ export interface IDashboardResponse {
         full_name: string;
         created_at: Date;
         avatar: string;
+        is_active: boolean;
       }
     ];
   };

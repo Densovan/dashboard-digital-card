@@ -21,6 +21,7 @@ interface RecentUsers {
   email: string;
   avatar: string;
   created_at: Date;
+  is_active: boolean;
 }
 
 interface DashboardStore {

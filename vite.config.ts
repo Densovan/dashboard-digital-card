@@ -5,6 +5,9 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    include: ["@radix-ui/react-alert-dialog"],
+  },
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

@@ -24,7 +24,18 @@ export const requestUser = () => {
     });
   };
 
+  const UPDATE_USER = async (id: string, status: boolean) => {
+    return await request({
+      url: `/user/update-user/${id}`,
+      method: "PUT",
+      data: {
+        is_active: status,
+      },
+    });
+  };
+
   return {
     USERS,
+    UPDATE_USER,
   };
 };

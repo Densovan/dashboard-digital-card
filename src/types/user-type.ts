@@ -33,6 +33,7 @@ export interface IUser {
   user_name: string;
   email: string;
   password: string;
+  is_active: boolean;
   avatar: string | null;
   is_deleted: boolean;
   roles: string[];

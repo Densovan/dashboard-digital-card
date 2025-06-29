@@ -22,13 +22,11 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Pen, Trash } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { IUser } from "@/types/user-type";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
@@ -36,11 +34,23 @@ import { Pagination } from "@/lib/pagination";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { Badge } from "@/components/ui/badge";
+import { useUserStatusDialog } from "@/store/user-status-dialog-store";
+import UserStatusAlertDialog from "@/components/user-status-dialong";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const UsersTable = () => {
+  const queryClient = useQueryClient();
+  const { UPDATE_USER } = requestUser();
+  const { mutate: updateUserStatus, isPending: isUpdating } = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: boolean }) =>
+      UPDATE_USER(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
   const { USERS } = requestUser();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -194,16 +204,30 @@ const UsersTable = () => {
       ),
     },
     {
+      accessorKey: "is_active",
+      header: () => <div>Status</div>,
+      cell: ({ row }) => {
+        const user = row.original;
+        const isActive = user.is_active;
+        // const payload = user.is_active == true ? false : true;
+        // console.log(payload);
+
+        return (
+          <Badge
+            variant={isActive ? "default" : "destructive"}
+            className="cursor-pointer hover:opacity-80"
+            onClick={() =>
+              useUserStatusDialog.getState().setDialog(user.id, isActive)
+            }
+          >
+            {isActive ? "Active" : "Blocked"}
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: "created_at",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
-        >
-          Created At
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
+      header: () => <>Crated At</>,
       cell: ({ row }) => {
         const rawDate = row.getValue("created_at") as string;
         const fixedTime = dayjs(rawDate)
@@ -218,27 +242,36 @@ const UsersTable = () => {
       header: "Action",
       enableHiding: false,
       cell: ({ row }) => {
-        const user = row.original;
+        // const user = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(user.id)}
-              >
-                Copy user ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View user details</DropdownMenuItem>
-              <DropdownMenuItem>Edit user</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex space-x-1.5 items-center">
+            <Badge>
+              <Pen />
+              Edit
+            </Badge>
+            <Badge variant="destructive">
+              <Trash /> Delete
+            </Badge>
+          </div>
+          //   <DropdownMenu>
+          //     <DropdownMenuTrigger asChild>
+          //       <Button variant="ghost" className="h-8 w-8 p-0">
+          //         <span className="sr-only">Open menu</span>
+          //         <MoreHorizontal />
+          //       </Button>
+          //     </DropdownMenuTrigger>
+          //     <DropdownMenuContent align="end">
+          //       <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          //       <DropdownMenuItem
+          //         onClick={() => navigator.clipboard.writeText(user.id)}
+          //       >
+          //         Copy user ID
+          //       </DropdownMenuItem>
+          //       <DropdownMenuSeparator />
+          //       <DropdownMenuItem>View user details</DropdownMenuItem>
+          //       <DropdownMenuItem>Edit user</DropdownMenuItem>
+          //     </DropdownMenuContent>
+          //   </DropdownMenu>
         );
       },
     },
@@ -269,10 +302,16 @@ const UsersTable = () => {
     },
   });
 
-  console.log(data?.data, "==data==");
-
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      {/* //alert dailong to update status */}
+      <UserStatusAlertDialog
+        onConfirm={(userId, newStatus) => {
+          updateUserStatus({ id: userId, status: newStatus });
+        }}
+        isLoading={isUpdating}
+      />
+      ;
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
       </div>
