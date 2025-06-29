@@ -32,6 +32,13 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import type { IUser } from "@/types/user-type";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
+import { Pagination } from "@/lib/pagination";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const UsersTable = () => {
   const { USERS } = requestUser();
@@ -44,11 +51,16 @@ const UsersTable = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = useState({
     pageIndex: 0, //initial page index
-    pageSize: 5, //default page size
+    pageSize: 10, //default page size
   });
 
   const sortField = sorting[0]?.id ?? "created_at";
-  const sortOrder = sorting[0]?.desc ? "DESC" : "ASC";
+  const sortOrder =
+    sorting.length === 0
+      ? "DESC" // default sort order
+      : sorting[0]?.desc
+      ? "DESC"
+      : "ASC";
   const emailFilter = columnFilters.find((f) => f.id === "email")?.value ?? "";
 
   const { data, isLoading } = useQuery({
@@ -95,6 +107,36 @@ const UsersTable = () => {
       enableHiding: false,
     },
     {
+      id: "no",
+      header: "No.",
+      cell: ({ row, table }) => {
+        const pageIndex = table.getState().pagination.pageIndex;
+        const pageSize = table.getState().pagination.pageSize;
+        const rowIndex = row.index;
+        return <div>{pageIndex * pageSize + rowIndex + 1}</div>;
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "avatar",
+      header: "Avatar",
+      cell: ({ row }) => {
+        const avatar = row.getValue("avatar") as string;
+        const defaultAvatar =
+          "https://ui-avatars.com/api/?name=User&background=random";
+        return (
+          <img
+            src={avatar || defaultAvatar}
+            alt="User avatar"
+            className="h-10 w-10 rounded-full object-cover"
+          />
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
       accessorKey: "full_name",
       header: ({ column }) => {
         return (
@@ -111,6 +153,25 @@ const UsersTable = () => {
       },
       cell: ({ row }) => {
         return <div className="capitalize">{row.getValue("full_name")}</div>;
+      },
+    },
+    {
+      accessorKey: "user_name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "desc")
+            }
+          >
+            Username
+            <ArrowUpDown />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        return <div className="capitalize">{row.getValue("user_name")}</div>;
       },
     },
     {
@@ -132,7 +193,26 @@ const UsersTable = () => {
         <div className="lowercase">{row.getValue("email")}</div>
       ),
     },
+    {
+      accessorKey: "created_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "desc")}
+        >
+          Created At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const rawDate = row.getValue("created_at") as string;
+        const fixedTime = dayjs(rawDate)
+          .add(7, "hour")
+          .format("YYYY-MM-DD hh:mm A");
 
+        return <div className="text-sm text-muted-foreground">{fixedTime}</div>;
+      },
+    },
     {
       id: "actions",
       header: "Action",
@@ -320,47 +400,11 @@ const UsersTable = () => {
               </div>
 
               {/* Simple Flow Pagination */}
-              <div className="flex items-center space-x-2">
-                {/* Previous Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  Previous
-                </Button>
-
-                {/* Page Numbers */}
-                {Array.from(
-                  { length: table.getPageCount() },
-                  (_, i) => i + 1
-                ).map((page) => {
-                  const isActive =
-                    page === table.getState().pagination.pageIndex + 1;
-                  return (
-                    <Button
-                      key={page}
-                      variant={isActive ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => table.setPageIndex(page - 1)}
-                      className="h-8 w-8"
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
-
-                {/* Next Button */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  Next
-                </Button>
-              </div>
+              <Pagination
+                currentPage={table.getState().pagination.pageIndex + 1}
+                totalPages={table.getPageCount()}
+                onPageChange={(page) => table.setPageIndex(page - 1)}
+              />
 
               <div className="text-sm text-muted-foreground">
                 Page {data?.meta?.page || 1} of {table.getPageCount()}
